@@ -1,0 +1,56 @@
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+/*.jumbotront {*/
+/*    height: 100%;*/
+/*    padding-top: 38px;*/
+/*    padding-bottom: 48px;*/
+/*    color: inherit;*/
+/*    !*margin-bottom: 30px;*!*/
+/*    background: #eeeeee;*/
+/*}*/
+
+.jumbotron .big {
+    font-size: 1600%;
+    font-weight: bold;
+}
+
+.jumbotron .small {
+    font-size: 500%;
+}
+
+.in-output {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #eee;
+}
+
+.left {
+    margin-left: 10%;
+    width: 48%;
+    height: 100%;
+    margin-right: -6%;
+}
+
+.left.up-btn {
+    margin-left: 10px;
+    margin-bottom: 15px;
+    height: 30px;
+}
+
+.right {
+    flex: 1;
+    /*background: green;*/
+    padding: 0;
+    width: 48%;
+    margin: 0 1% 0 0;
+    height: 100%;
+}
+
+.right .code-out {
+    margin-right: 0;
+}

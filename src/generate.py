@@ -8,18 +8,18 @@ import os
 import re
 import sys
 
-from lexer import word_list
-from LR import analysis
+from src.lexer import word_list
+from src.LR import analysis
 # from parser import Node,build_ast
-from other.function import if_num
+from src.other.function import if_num
 
 sys.path.append(os.pardir)
 
 operator = {
-    "+": lambda a, b: a+b,
-    "-": lambda a, b: a-b,
-    "*": lambda a, b: a*b,
-    "/": lambda a, b: a/b
+    "+": lambda a, b: a + b,
+    "-": lambda a, b: a - b,
+    "*": lambda a, b: a * b,
+    "/": lambda a, b: a / b
 }
 
 """
@@ -31,18 +31,23 @@ operator = {
     3.  (j<, ａ, b, block1)          条件跳转 if(a<b) then　jmp block1
     4.  (print, 0, 0, a)             打印变量ａ
 """
+
+
 class Mnode:
     def __init__(self, op="undefined", a1=None, a2=None, re=None):
         self.op = op
         self.arg1 = a1
         self.arg2 = a2
         self.re = re
+    
     """字符化输出"""
+    
     def __str__(self):
         return "({0},{1},{2},{3})".format(self.op, self.arg1, self.arg2, self.re)
-
+    
     def __repr__(self):
         return self.__str__()
+
 
 """
 两个全局 mid_result 存放四元式对象
@@ -59,6 +64,8 @@ type_flag = ""
 遇到相应非终结符做相应处理，遇到终结符返回终结符，其他字符递归处理其子节点
 
 """
+
+
 def view_astree(root, ft=None):
     global type_flag
     if root.type == "type":
@@ -77,9 +84,10 @@ def view_astree(root, ft=None):
         re = ""
         for c in root.child:
             cre = view_astree(c)
-            if cre != None  and cre not in "[]}{)(\"'":
+            if cre != None and cre not in "[]}{)(\"'":
                 re = cre
         return re
+
 
 def math_op(root, ft=None):
     if root == None:
@@ -99,13 +107,14 @@ def math_op(root, ft=None):
         
         c1 = root.child[1]
         if len(c1.child) == 1:
-            mid_result.append(Mnode("=",0,0,math_op(root.child[0].child[0])))
+            mid_result.append(Mnode("=", 0, 0, math_op(root.child[0].child[0])))
         elif c1.child[0].type == "=":
-            mid_result.append(Mnode("=",math_op(c1),0,math_op(root.child[0].child[0])))
+            mid_result.append(Mnode("=", math_op(c1), 0, math_op(root.child[0].child[0])))
         else:
-            if len(c1.child[1].child) >1:
+            if len(c1.child[1].child) > 1:
                 cc1 = c1.child[1]
-                mid_result.append(Mnode("=",math_op(cc1),0,math_op(root.child[0].child[0]) +"[]" + math_op(c1.child[0])))
+                mid_result.append(
+                    Mnode("=", math_op(cc1), 0, math_op(root.child[0].child[0]) + "[]" + math_op(c1.child[0])))
             if math_op(root.child[0].child[0]) not in arr:
                 arr[math_op(root.child[0].child[0])] = [math_op(c1.child[0]), type_flag]
                 type_flag = ""
@@ -115,19 +124,19 @@ def math_op(root, ft=None):
             arg1 = math_op(root.child[1])
             if if_num(arg1) and if_num(ft):
                 return str(operator[op](int(arg1), int(ft)))
-
+            
             """
             临时变量Tn
             ft 为父节点传入的操作符左边部分临时id
             """
             t = "T" + str(tmp)
             tmp += 1
-            mid_result.append(Mnode(op, arg1, ft,t))
+            mid_result.append(Mnode(op, arg1, ft, t))
             ct = math_op(root.child[2], t)
             if ct != None:
                 return ct
             return t
-
+    
     elif root.type == "E" or root.type == "T":
         """
         赋值语句处理
@@ -141,10 +150,10 @@ def math_op(root, ft=None):
             """静态的计算提前算好"""
             if if_num(arg1) and if_num(arg2):
                 return str(operator[op](int(arg1), int(arg2)))
-
+            
             t = "T" + str(tmp)
             tmp += 1
-            mid_result.append(Mnode(op, arg1, arg2,t))
+            mid_result.append(Mnode(op, arg1, arg2, t))
             ct = math_op(root.child[1].child[2], t)
             if ct != None:
                 return ct
@@ -157,7 +166,7 @@ def math_op(root, ft=None):
             return c[0].child[0].text + "[]" + math_op(c[1])
         else:
             return c[0].child[0].text
-
+    
     else:
         re = ""
         for c in root.child:
@@ -174,6 +183,8 @@ def math_op(root, ft=None):
     ２. while语句
     ３. if和while的相互嵌套语句
 """
+
+
 def judge(root):
     if root == None:
         return
@@ -187,7 +198,7 @@ def judge(root):
             对whilie语句进行代码块标记，方便跳转
             """
             cur = len(mid_result)
-            while_flag.append([True,cur])
+            while_flag.append([True, cur])
             mid_result.append(Mnode("code_block", 0, 0, "W" + str(cur)))
     if root.type == "Pbc":
         """
@@ -197,9 +208,10 @@ def judge(root):
         """
         Pm = root.child[1].child
         if len(Pm) == 1:
-            mid_result.append(Mnode("j=", 1, math_op(root.child[0]),"code"+str(len(mid_result)+1)))
+            mid_result.append(Mnode("j=", 1, math_op(root.child[0]), "code" + str(len(mid_result) + 1)))
         else:
-            mid_result.append(Mnode("j"+judge(Pm[0]), math_op(root.child[0]), math_op(Pm[1]),"code"+str(len(mid_result)+1)))
+            mid_result.append(
+                Mnode("j" + judge(Pm[0]), math_op(root.child[0]), math_op(Pm[1]), "code" + str(len(mid_result) + 1)))
         return
     if root.type == "Pro":
         """
@@ -215,12 +227,12 @@ def judge(root):
         w = while_flag.pop()
         code_block = len(mid_result)
         code = "block" + str(code_block)
-        mid_result.append(Mnode("j",0, 0,code))
-        mid_result.append(Mnode("code_block",0,0,"code"+str(code_block)))
+        mid_result.append(Mnode("j", 0, 0, code))
+        mid_result.append(Mnode("code_block", 0, 0, "code" + str(code_block)))
         view_astree(root)
         if w[0] == True:
-            mid_result.append(Mnode("j",0,0,"W"+str(w[1])))    
-        mid_result.append(Mnode("code_block",0,0,code))
+            mid_result.append(Mnode("j", 0, 0, "W" + str(w[1])))
+        mid_result.append(Mnode("code_block", 0, 0, code))
         code_block += 1
         return
     else:
@@ -236,6 +248,8 @@ def judge(root):
 输出处理
 可处理语句：printf(a,b) 该语法：在括号内只能传入变量参数
 """
+
+
 def out(root):
     if root == None:
         return
@@ -249,11 +263,12 @@ def out(root):
             while len(V.child) > 1:
                 name.append(math_op(V.child[1]))
                 V = V.child[2]
-            name.extend(['-1','-1','-1'])
+            name.extend(['-1', '-1', '-1'])
             mid_result.append(Mnode("print", name[0], name[1], name[2]))
     else:
         for c in root.child:
             out(c)
+
 
 def creat_mcode(filename):
     global tmp
@@ -263,15 +278,27 @@ def creat_mcode(filename):
     tmp = 0
     mid_result = []
     w_list = word_list(filename)
-    word_table = w_list.word_list
-    string_list = w_list.string_list
-    root = analysis(word_table)[1]
-    view_astree(root)
-
-    return {"name_list":w_list.name_list, "mid_code":mid_result, "tmp":tmp, "strings":string_list, "arrs":arr}
+    if w_list.flag:
+        word_table = w_list.word_list
+        string_list = w_list.string_list
+        root = analysis(word_table)[1]
+        view_astree(root)
         
+        return {"name_list": w_list.name_list, "mid_code": mid_result, "tmp": tmp, "strings": string_list, "arrs": arr}
+    else:
+        return False
+
+def get_generate():
+    filename = 'code/upload.c'
+    creat_mcode(filename)
+    result = ''
+    for r in mid_result:
+        result += str(r)
+    return result
+
+
 if __name__ == "__main__":
-    filename = 'test/test.c'
+    filename = '../code/upload.c'
     creat_mcode(filename)
     for r in mid_result:
         print(r)

@@ -5,11 +5,12 @@
 Github：github.com/flymysql
 """
 
-from get_predict_table import creat_predict_table
+from src.get_predict_table import creat_predict_table
 import re
-from lexer import word_list
+from src.lexer import word_list
 
 predict_table = creat_predict_table()
+
 
 # 语法树节点
 class Node:
@@ -17,6 +18,7 @@ class Node:
         self.type = Type
         self.text = text
         self.child = list()
+    
     # 将语法树对象字符化输出
     def __str__(self):
         childs = list()
@@ -28,9 +30,10 @@ class Node:
                 for line in child.split("\n"):
                     out = out + "\n     " + line
         return out
-
+    
     def __repr__(self):
         return self.__str__()
+
 
 # 输出栈中节点的type
 def stack_text(stack):
@@ -39,13 +42,16 @@ def stack_text(stack):
         ss.append(s.type)
     return ss
 
-def analysis(word_table, show=False):
+
+def analysis(word_table, show=True):
     stack = []
     root = Node("Program")
     End = Node("#")
     stack.append(End)
     stack.append(root)
     index = 0
+    result = ''
+    
     """
     分析预测表的三个状态
     1. cur = #  解析完成
@@ -57,12 +63,18 @@ def analysis(word_table, show=False):
         cur = stack.pop()
         # 状态 1
         if cur.type == "#" and len(stack) == 0:
-            print("分析完成!")
-            return [True, root]
+            # print("分析完成!")
+            result += '分析完成'
+            return [True, root, result]
         # 状态 2
         elif cur.type == word_table[index]['type']:
             if show:
                 print("符号栈：", stack_text(stack), "\n匹配字符: ", word_table[index]['word'])
+                result += "符号栈："
+                # for value in stack_text(stack):
+                #     result += value + ','
+                result += ', '.join(stack_text(stack))
+                result += "\n匹配字符: " + word_table[index]['word'] + '\n'
             cur.text = word_table[index]['word']
             index += 1
         # 状态 3
@@ -73,7 +85,12 @@ def analysis(word_table, show=False):
                     continue
                 next_pr = predict_table[cur.type][w].split()
                 if show:
-                    print("\n符号栈：", stack_text(stack), "\n产生式: ", cur.type,"->", predict_table[cur.type][w])
+                    print("\n符号栈：", stack_text(stack), "\n产生式: ", cur.type, "->", predict_table[cur.type][w])
+                    result += "\n符号栈："
+                    # for value in stack_text(stack):
+                    #     result += value
+                    result += ', '.join(stack_text(stack))
+                    result += "\n产生式: " + cur.type + "->" + predict_table[cur.type][w] + '\n'
                 node_list = []
                 """
                 产生式右部符号入栈
@@ -89,12 +106,28 @@ def analysis(word_table, show=False):
                     stack.append(nl)
             # 状态 4 错误
             else:
-                print("error", stack, cur.type , word_table[index]['type'])
+                print("error", stack, cur.type, word_table[index]['type'])
+                result += "error"
+                result.join(stack.__str__())
+                result += cur.type + word_table[index]['type']
                 return [False]
 
-if __name__ == "__main__":
-    w_list = word_list("./test/test.c")
+
+def get_lr():
+    w_list = word_list('code/upload.c')
     word_table = w_list.word_list
+    try:
+        _, _, result = analysis(word_table)
+    except:
+        result = '代码错误，请使用“字符变量分析”功能检查'
+    print(result)
+    return result
+
+
+if __name__ == "__main__":
+    w_list = word_list("../code/upload.c")
+    word_table = w_list.word_list
+    # print(word_table)
     root = analysis(word_table, True)
     if root[0]:
         print("\n\n是否继续打印语法树？\t1.打印 \t2.任意键退出\tTip：运行generate.py输出中间代码（四元式）\n请输入")
