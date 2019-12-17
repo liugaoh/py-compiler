@@ -15,7 +15,7 @@ editor.setValue("int main(){\n" +
     "}");
 editor.setSize('80%', '90%');
 
-// $("#code").next().css({marginleft: "4%"});
+// $("#code").next().css({fontfamily: "Consolar"});
 
 var outer = CodeMirror.fromTextArea(document.getElementById("code-out"), {
     mode: "text/x-c",
