@@ -1,9 +1,3 @@
-"""
-语义分析:中间代码产生——四元式
-作者：刘金明
-博客：me.idealli.com
-Github：github.com/flymysql
-"""
 import os
 import re
 import sys

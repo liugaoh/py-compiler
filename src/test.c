@@ -1,5 +1,3 @@
-
-// 兰州小红鸡的注释测试
 int main(){
     int arr[25];
     int index = 0;
@@ -13,5 +11,5 @@ int main(){
         printf("f(%d)=%d\n",index,b);
         index = index +1;
     }
-    printf("完成斐波那契数列打印！由小鸡编译器提供——pcc\n");
+    printf("完成斐波那契数列打印！");
 }

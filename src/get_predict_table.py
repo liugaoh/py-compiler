@@ -1,9 +1,3 @@
-"""
-使用非递归的预测分析表做语法分析————预测分析表的生成
-作者：刘金明
-博客：me.idealli.com
-Github：github.com/flymysql
-"""
 import sys, os, re
 
 sys.path.append(os.pardir)

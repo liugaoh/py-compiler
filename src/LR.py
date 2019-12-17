@@ -1,10 +1,3 @@
-"""
-使用非递归的预测分析表做语法分析————语法树生成
-作者：刘金明
-博客：me.idealli.com
-Github：github.com/flymysql
-"""
-
 from src.get_predict_table import creat_predict_table
 import re
 from src.lexer import word_list

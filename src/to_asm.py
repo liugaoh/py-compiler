@@ -1,17 +1,5 @@
-"""
-中间代码转汇编代码
-作者：刘金明
-博客：me.idealli.com
-Github：github.com/flymysql
-"""
 from src.generate import creat_mcode
 from src.other.function import if_num
-
-global_head = """
-;----------------------Welcome to Pcc--------------------------
-; by 兰州小红鸡
-;-------------------------------------------------------------------
-"""
 
 code_head = """
 \t.cfi_startproc
@@ -30,7 +18,7 @@ code_footer = """
 \t.cfi_endproc
 .LFE6:
 	.size\tmain, .-main
-	.ident\t"PCC: 1.0.0"
+	.ident\t"PY-COMPILER: 1.0.0"
 """
 
 """

@@ -1,10 +1,3 @@
-"""
-环境：python3.6
-作者：刘金明
-博客：me.idealli.com
-Github：github.com/flymysql
-"""
-
 import re
 # 一些判断函数和字符分割函数放在同级文件function.py中
 import sys, os
