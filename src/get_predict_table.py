@@ -1,22 +1,24 @@
-import sys, os, re
+from src.lexer import word_list, k_list
+import sys
+import os
+import re
 
 sys.path.append(os.pardir)
-from src.lexer import word_list, k_list
 
 grammars = {
     "Program": ["type M C Pro"],
     "C": ["( cc )"],
     "cc": ["null"],
-    
+
     "Pro": ["{ Pr }"],
     "Pr": ["P Pr", "null"],
     "P": ["type L ;", "L ;", "printf OUT ;", "Pan"],
-    
+
     "L": ["M LM"],
     "LM": ["= FE", "Size AM", "null"],
     "FE": ["E", "TEXT", "CHAR"],
     "M": ["name"],
-    
+
     "E": ["T ET"],
     "ET": ["+ T ET", "- T ET", "null"],
     "T": ["F TT"],
@@ -24,18 +26,18 @@ grammars = {
     "F": ["number", "BRA", "M MS"],
     "MS": ["Size", "null"],
     "BRA": ["( E )"],
-    
+
     "OUT": ["( TXT V )"],
     "TXT": ['TEXT'],
     "V": [", E VV", "null"],
     "VV": [", E VV", "null"],
-    
+
     "Pan": ["Ptype P_block Pro"],
     "Ptype": ["if", "while"],
     "P_block": ["( Pbc )"],
     "Pbc": ["E PM"],
     "PM": ["Cmp E", "null"],
-    
+
     "Size": ["[ E ]"],
     "AM": ["= E", "null"]
 }
@@ -119,19 +121,21 @@ def find_follow():
     for k in grammars:
         for next_grammar in grammars[k]:
             next_k = next_grammar.split()
-            
+
             for i in range(0, len(next_k) - 1):
                 if next_k[i] in grammars:
                     if next_k[i + 1] not in grammars:
                         """
                         如果后继字符不是终结符，加入
                         """
-                        new_follow = U([next_k[i + 1]], follow_table[next_k[i]])
+                        new_follow = U([next_k[i + 1]],
+                                       follow_table[next_k[i]])
                         if new_follow != follow_table[next_k[i]]:
                             follow_table[next_k[i]] = new_follow
                             refresh(next_k[i])
                     else:
-                        new_follow = U(first_table[next_k[i + 1]], follow_table[next_k[i]])
+                        new_follow = U(
+                            first_table[next_k[i + 1]], follow_table[next_k[i]])
                         """
                         如果后继字符的first集合中含有null，通知所有订阅者更新follow集合
                         """
@@ -148,8 +152,9 @@ def find_follow():
                 if next_k[-1] not in follow_table:
                     follow_table[next_k[-1]] = []
                 if next_k[-1] != k:
-                    follow_table[next_k[-1]] = U(follow_table[next_k[-1]], follow_table[k])
-    
+                    follow_table[next_k[-1]
+                                 ] = U(follow_table[next_k[-1]], follow_table[k])
+
     for k in follow_table:
         if "null" in follow_table[k]:
             follow_table[k].remove("null")
@@ -188,7 +193,7 @@ def get_predict_table():
                     predict_table[k][fk] = next_grammar
 
 
-def creat_predict_table():
+def create_predict_table():
     get_first_table()
     find_follow()
     get_predict_table()
@@ -196,12 +201,12 @@ def creat_predict_table():
     return predict_table
 
 
-def show_tables():
+def get_tables():
     get_first_table()
     find_follow()
     get_predict_table()
     result = ''
-    result += "\nfirst集合如下\n"
+    result += "first集合如下\n"
     for k in first_table:
         result += str(k) + '  '
         result += str(first_table[k]) + '\n'
@@ -217,4 +222,4 @@ def show_tables():
 
 
 if __name__ == "__main__":
-    show_tables()
+    get_tables()

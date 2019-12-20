@@ -38,7 +38,7 @@
 <body>
 <div class="jumbotron" style="position:absolute; height: 100%; width:100%; z-index: 999999; margin-bottom: 0"
      id="welcome">
-    <h1 class="big">Hello, world!</h1>
+    <h1 class="big" style="margin-top: 10%">Hello, world!</h1>
     <p class="small">This is a C compiler written in python</p>
     <p><a class="btn btn-primary btn-lg" href="#in-output" role="button" style="margin-left: 1%;"
           id="start-btn">Start</a></p>
@@ -53,13 +53,13 @@
     </div>
     <div class="right">
         <input type="button" class="btn btn-success"
-               style="margin-left: 15px;margin-bottom: 10px;margin-top: 10px;height: 30px" id="get_table" value="语法分析">
-        {#        <input type="button" class="btn btn-success"#}
-        {#               style="margin-left: 5px;margin-bottom: 10px;margin-top: 10px;height: 30px" id="get_generate" value="生成四元式">#}
+               style="margin-left: 15px;margin-bottom: 10px;margin-top: 10px;height: 30px" id="get_table" value="预测分析表">
         <input type="button" class="btn btn-success"
-               style="margin-left: 5px;margin-bottom: 10px;margin-top: 10px;height: 30px" id="get_lexer" value="字符变量分析">
+               style="margin-left: 5px;margin-bottom: 10px;margin-top: 10px;height: 30px" id="get_lexer" value="词法分析">
         <input type="button" class="btn btn-success"
-               style="margin-left: 5px;margin-bottom: 10px;margin-top: 10px;height: 30px" id="get_lr" value="生成语法树">
+               style="margin-left: 5px;margin-bottom: 10px;margin-top: 10px;height: 30px" id="get_lr" value="语法分析">
+        <input type="button" class="btn btn-success"
+               style="margin-left: 5px;margin-bottom: 10px;margin-top: 10px;height: 30px" id="get_tree" value="生成语法树">
         <input type="button" class="btn btn-success"
                style="margin-left: 5px;margin-bottom: 10px;margin-top: 10px;height: 30px" id="get_asm" value="汇编">
         <input type="button" class="btn btn-success"

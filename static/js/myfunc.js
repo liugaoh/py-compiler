@@ -73,24 +73,24 @@ $("#get_table").click(function () {
     })
 });
 
-// 生成四元式
-// $("#get_generate").click(function () {
-//     console.log('click');
-//     myajax.get({
-//         'url': '/get_generate',
-//         'data': {'message': editor.getValue()},
-//         'success': function (result) {
-//             if (result) {
-//                 outer.setValue(result)
-//             } else {
-//                 outer.setValue('网络错误或程序错误')
-//             }
-//         },
-//         'fail': function (error) {
-//             console.log(error)
-//         }
-//     })
-// });
+// 生成语法树
+$("#get_tree").click(function () {
+    console.log('click');
+    myajax.get({
+        'url': '/get_tree',
+        'data': {'message': editor.getValue()},
+        'success': function (result) {
+            if (result) {
+                outer.setValue(result)
+            } else {
+                outer.setValue('网络错误或程序错误')
+            }
+        },
+        'fail': function (error) {
+            console.log(error)
+        }
+    })
+});
 
 // 输出字符与变量
 $("#get_lexer").click(function () {

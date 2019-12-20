@@ -1,5 +1,5 @@
-from src.generate import creat_mcode
-from src.other.function import if_num
+from src.generate import create_mcode
+from src.function import if_num
 
 code_head = """
 \t.cfi_startproc
@@ -46,19 +46,20 @@ def args(n, name):
             if name[ags[0]][1] == "char":
                 return "-" + str(int(name[ags[0]][0]) - int(ags[1])) + "(%rbp)"
             elif name[ags[0]][1] == "int":
-                return "-" + str(int(name[ags[0]][0]) - int(ags[1]) * 4) + "(%rbp)"
+                return "-" + str(int(name[ags[0]][0]) -
+                                 int(ags[1]) * 4) + "(%rbp)"
         else:
             re += "\tmovl\t" + args(ags[1], name) + ", %eax\n\tcltq\n"
             if name[ags[0]][1] == "char":
                 return "-" + name[ags[0]][0] + "(%rbp, %rax, 1)"
             elif name[ags[0]][1] == "int":
                 return "-" + name[ags[0]][0] + "(%rbp, %rax, 4)"
-    
+
     elif "T" in str(n):
         return n + "(%rip)"
     elif if_num(str(n)):
         return "$" + str(n)
-    
+
     else:
         return n
 
@@ -126,7 +127,7 @@ def generate_code(mid_code, name):
         a2 = args(m.arg2, name)
         r = args(m.re, name)
         if m.op == "=":
-            
+
             if m.re in name and name[m.re][1] == "char":
                 re += "\tmovb\t$" + str(ord(m.arg1)) + ", " + r + "\n"
             elif m.arg1 in name or "T" in m.arg1 or "[]" in m.arg1:
@@ -137,7 +138,7 @@ def generate_code(mid_code, name):
         elif m.op == "code_block":
             re += "." + m.re + ":\n"
             continue
-        
+
         elif "j" in m.op:
             if m.op == "j":
                 re += "\tjmp\t." + m.re + "\n"
@@ -150,7 +151,7 @@ def generate_code(mid_code, name):
                     re += "\tjle\t." + m.re + "\n"
                 elif "=" in m.op:
                     re += "\tje\t." + m.re + "\n"
-        
+
         elif m.op in "+-":
             re += "\tmovl\t" + a1 + ", %edx\n"
             re += "\tmovl\t" + a2 + ", %eax\n"
@@ -159,7 +160,7 @@ def generate_code(mid_code, name):
             else:
                 re += "\tsubl\t%edx, %eax\n"
             re += "\tmovl\t%eax, " + r + "\n"
-        
+
         elif m.op in "*/":
             if m.arg1 in name:
                 re += "\tmovl\t" + a2 + ", %eax\n"
@@ -172,7 +173,7 @@ def generate_code(mid_code, name):
             elif m.arg2 not in name and m.arg1 not in name:
                 num = int(m.arg2) * int(m.arg1)
                 re += "\tmovl\t$" + str(num) + ", " + r + "\n"
-        
+
         elif m.op == "print":
             global LC
             if m.arg1 != "-1":
@@ -190,10 +191,11 @@ def generate_code(mid_code, name):
                     re += "\tmovsbl\t" + r + ", %ecx\n"
                 else:
                     re += "\tmovl\t" + r + ", %ecx\n"
-            re += "\tmovl\t%eax, %esi\n" + "\tleaq\t.LC" + str(LC) + "(%rip), %rdi\n"
+            re += "\tmovl\t%eax, %esi\n" + \
+                "\tleaq\t.LC" + str(LC) + "(%rip), %rdi\n"
             LC += 1
             re += "\tmovl\t$0, %eax\n\tcall\tprintf@PLT\n"
-    
+
     return re
 
 
@@ -228,7 +230,7 @@ def connect(tmp, strs, code, subq):
 def to_asm(filename):
     global LC
     LC = 0
-    mid_result = creat_mcode(filename)
+    mid_result = create_mcode(filename)
     mid_code = mid_result['mid_code']
     name_list = mid_result['name_list']
     tmp = mid_result['tmp']
@@ -243,11 +245,11 @@ def to_asm(filename):
 
 
 def get_asm():
-    filename = 'code/upload.c'
-    global LC
-    LC = 0
-    mid_result = creat_mcode(filename)
-    if mid_result:
+    try:
+        filename = 'code/upload.c'
+        global LC
+        LC = 0
+        mid_result = create_mcode(filename)
         mid_code = mid_result['mid_code']
         name_list = mid_result['name_list']
         tmp = mid_result['tmp']
@@ -259,7 +261,7 @@ def get_asm():
         result = connect(tmp, string_list, asm, name[1])
         # re_asm = open(filename[:-1] + "s", "w").write(result)
         return result
-    else:
+    except:
         return "存在错误，请运行“字符变量分析”功能检查"
 
 

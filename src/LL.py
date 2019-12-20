@@ -1,8 +1,11 @@
-from src.get_predict_table import creat_predict_table
+# 语法分析
+from Cython.Shadow import typeof
+
+from src.get_predict_table import create_predict_table
 import re
 from src.lexer import word_list
 
-predict_table = creat_predict_table()
+predict_table = create_predict_table()
 
 
 # 语法树节点
@@ -13,7 +16,7 @@ class Node:
         self.child = list()
     
     # 将语法树对象字符化输出
-    def __str__(self):
+    def __str__(self):  # 输出树状语法树
         childs = list()
         for child in self.child:
             childs.append(child.__str__())
@@ -36,7 +39,7 @@ def stack_text(stack):
     return ss
 
 
-def analysis(word_table, show=True):
+def analysis(word_table, show=True):  # 分析
     stack = []
     root = Node("Program")
     End = Node("#")
@@ -54,15 +57,16 @@ def analysis(word_table, show=True):
     """
     while len(stack) != 0:
         cur = stack.pop()
-        # 状态 1
+        # 状态 1，type类型为 # 结束符
         if cur.type == "#" and len(stack) == 0:
             # print("分析完成!")
             result += '分析完成'
+            print(result)
             return [True, root, result]
-        # 状态 2
+        # 状态 2，type类型与待分析词
         elif cur.type == word_table[index]['type']:
             if show:
-                print("符号栈：", stack_text(stack), "\n匹配字符: ", word_table[index]['word'])
+                # print("符号栈：", stack_text(stack), "\n匹配字符: ", word_table[index]['word'])
                 result += "符号栈："
                 # for value in stack_text(stack):
                 #     result += value + ','
@@ -76,14 +80,15 @@ def analysis(word_table, show=True):
             if w in predict_table[cur.type]:
                 if predict_table[cur.type][w] == "null":
                     continue
-                next_pr = predict_table[cur.type][w].split()
+                next_pr = predict_table[cur.type][w].split()  # 预测分析表中 w 对应的分解
                 if show:
-                    print("\n符号栈：", stack_text(stack), "\n产生式: ", cur.type, "->", predict_table[cur.type][w])
+                    # print("\n符号栈：", stack_text(stack), "\n产生式: ", cur.type, "->", predict_table[cur.type][w])
                     result += "\n符号栈："
                     # for value in stack_text(stack):
                     #     result += value
                     result += ', '.join(stack_text(stack))
-                    result += "\n产生式: " + cur.type + "->" + predict_table[cur.type][w] + '\n'
+                    result += "\n产生式: " + cur.type + "->" + \
+                              predict_table[cur.type][w] + '\n'
                 node_list = []
                 """
                 产生式右部符号入栈
@@ -99,7 +104,7 @@ def analysis(word_table, show=True):
                     stack.append(nl)
             # 状态 4 错误
             else:
-                print("error", stack, cur.type, word_table[index]['type'])
+                # print("error", stack, cur.type, word_table[index]['type'])
                 result += "error"
                 result.join(stack.__str__())
                 result += cur.type + word_table[index]['type']
@@ -111,10 +116,27 @@ def get_lr():
     word_table = w_list.word_list
     try:
         _, _, result = analysis(word_table)
-    except:
+        result = result[1:]
+    except BaseException:
         result = '代码错误，请使用“字符变量分析”功能检查'
-    print(result)
+    # print(result)
     return result
+
+
+def get_tree():
+    result = ''
+    try:
+        with open('code/upload.txt', 'w', encoding='UTF-8') as f:
+            w_list = word_list("code/upload.c")
+            word_table = w_list.word_list
+            # print(word_table)
+            root = analysis(word_table, False)
+            print(root[1], file=f)
+        with open('code/upload.txt', 'r', encoding='UTF-8') as f:
+            result = ''.join(f.readlines())
+        return result
+    except BaseException:
+        return '分析错误，程序出错'
 
 
 if __name__ == "__main__":
@@ -125,6 +147,8 @@ if __name__ == "__main__":
     if root[0]:
         print("\n\n是否继续打印语法树？\t1.打印 \t2.任意键退出\tTip：运行generate.py输出中间代码（四元式）\n请输入")
         if input() == "1":
+            # print(typeof(root[1]))
+            # result = ''
             print(root[1])
             print("\n\n语法树打印完成！运行 genenrate.py 生成四元式\n\n")
         # print(root[1])

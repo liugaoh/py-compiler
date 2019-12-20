@@ -17,8 +17,8 @@ def hello_world():
 
 @app.route('/get_table', methods=["GET"])
 def get_table():
-    from src.get_predict_table import show_tables
-    result = show_tables()
+    from src.get_predict_table import get_tables
+    result = get_tables()
     return result
 
 
@@ -44,8 +44,17 @@ def get_lexer():
 def get_lr_index():
     text = request.args.get('message')
     save_file(text)
-    from src.LR import get_lr
+    from src.LL import get_lr
     result = get_lr()
+    return result
+
+
+@app.route('/get_tree', methods=["GET"])
+def get_tree_index():
+    text = request.args.get('message')
+    save_file(text)
+    from src.LL import get_tree
+    result = get_tree()
     return result
 
 
@@ -84,7 +93,8 @@ def download_index():
     zipfiles()
     dirpath = 'code'
     from flask import send_from_directory
-    return send_from_directory(dirpath, 'download.tar', as_attachment=True)  # as_attachment=True 一定要写，不然会变成打开，而不是下载
+    # as_attachment=True 一定要写，不然会变成打开，而不是下载
+    return send_from_directory(dirpath, 'download.tar', as_attachment=True)
 
 
 if __name__ == '__main__':

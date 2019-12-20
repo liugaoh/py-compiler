@@ -1,7 +1,7 @@
 /* BASICS */
 @font-face {
     font-family: "myfont";
-    src: local("static/font/sarasa-gothic-tc-bold.ttf");
+    src: url("../../fonts/sarasa-gothic-tc-bold.ttf");
 }
 
 
@@ -10,6 +10,7 @@
     font-family: myfont;
     height: 300px;
     color: black;
+    font-size: 200%;
 
     direction: ltr;
 }
