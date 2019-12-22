@@ -61,7 +61,7 @@ def analysis(word_table, show=True):  # 分析
         if cur.type == "#" and len(stack) == 0:
             # print("分析完成!")
             result += '分析完成'
-            print(result)
+            # print(result)
             return [True, root, result]
         # 状态 2，type类型与待分析词
         elif cur.type == word_table[index]['type']:
